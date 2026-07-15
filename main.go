@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 )
 
 func main() {
@@ -14,6 +16,8 @@ func main() {
 		"4. Check Status",
 		"5. Exit",
 	}
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Println(reader)
 	for {
 		for _, task := range menuOptions {
 			fmt.Println(task)
@@ -24,22 +28,22 @@ func main() {
 		if err != nil {
 			fmt.Println(err)
 			continue
-		} 
-			switch choice {
-			case 1:
-				fmt.Println("Adding Task...")
-			case 2:
-				fmt.Println("Listing Tasks...")
-			case 3:
-				fmt.Println("Deleting Task...")
-			case 4:
-				fmt.Println("Cheking Status...")
-			case 5:
-				fmt.Println("Goodbye!")
-				return
-			default:
-				fmt.Println("Invalid Option")
-			}
-		
+		}
+		switch choice {
+		case 1:
+			fmt.Println("Adding Task...")
+		case 2:
+			fmt.Println("Listing Tasks...")
+		case 3:
+			fmt.Println("Deleting Task...")
+		case 4:
+			fmt.Println("Checking Status...")
+		case 5:
+			fmt.Println("Goodbye!")
+			return
+		default:
+			fmt.Println("Invalid Option")
+		}
 	}
+
 }
