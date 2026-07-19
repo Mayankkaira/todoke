@@ -4,6 +4,8 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strconv"
+	"strings"
 )
 
 func main() {
@@ -17,18 +19,24 @@ func main() {
 		"5. Exit",
 	}
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Println(reader)
 	for {
 		for _, task := range menuOptions {
 			fmt.Println(task)
 		}
 		fmt.Print("Choose an option:")
-		var choice int
-		_, err := fmt.Scan(&choice)
+		input, err := reader.ReadString('\n')
 		if err != nil {
 			fmt.Println(err)
 			continue
 		}
+		input = strings.TrimSpace(input)
+		// fmt.Printf("%q\n", input)
+		choice, err := strconv.Atoi(input)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+
 		switch choice {
 		case 1:
 			fmt.Println("Adding Task...")
@@ -44,6 +52,7 @@ func main() {
 		default:
 			fmt.Println("Invalid Option")
 		}
+
 	}
 
 }
