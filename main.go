@@ -8,6 +8,10 @@ import (
 	"strings"
 )
 
+type Task struct {
+	Name string
+}
+
 func main() {
 	fmt.Println("Welcome to Task Manager")
 	fmt.Println("What is on your mind today")
@@ -18,6 +22,7 @@ func main() {
 		"4. Check Status",
 		"5. Exit",
 	}
+	var tasks []Task
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		for _, task := range menuOptions {
@@ -39,7 +44,19 @@ func main() {
 
 		switch choice {
 		case 1:
-			fmt.Println("Adding Task...")
+			fmt.Println("enter the task name u want to enter")
+			input, err := reader.ReadString('\n')
+			if err != nil {
+				fmt.Println(err)
+				continue
+			}
+
+			input = strings.TrimSpace(input)
+			a := Task{Name: input}
+			tasks = append(tasks, a)
+			fmt.Println("Task added Successfully")
+			// fmt.Println(tasks)
+
 		case 2:
 			fmt.Println("Listing Tasks...")
 		case 3:
