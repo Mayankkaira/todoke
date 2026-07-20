@@ -6,6 +6,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
 )
 
 type Task struct {
@@ -54,13 +55,36 @@ func main() {
 			input = strings.TrimSpace(input)
 			a := Task{Name: input}
 			tasks = append(tasks, a)
-			fmt.Println("Task added Successfully")
+			fmt.Println("Task added Successfully...")
 			// fmt.Println(tasks)
 
 		case 2:
-			fmt.Println("Listing Tasks...")
+			if len(tasks) == 0 {
+				fmt.Println("No task found")
+				continue
+			}
+			fmt.Println("Your Tasks")
+			for i, value := range tasks {
+				// fmt.Printf("%T\n",tasks[i])
+				fmt.Printf("%d.%s\n", i+1, value.Name)
+			}
 		case 3:
-			fmt.Println("Deleting Task...")
+			if len(tasks)==0{
+				fmt.Println("There is no task to delete")
+				continue
+			}
+			for i,value:=range tasks{
+				fmt.Printf("%d.%s\n",i+1,value.Name)
+			}
+			fmt.Println("enter the task no u want to delete")
+			input,err:=reader.ReadString('\n')
+			if err!=nil{
+				fmt.Println(err)
+				continue
+			}
+			input=strings.TrimSpace(input)
+			tasks=remove()
+
 		case 4:
 			fmt.Println("Checking Status...")
 		case 5:
