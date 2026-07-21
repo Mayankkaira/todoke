@@ -9,7 +9,8 @@ import (
 )
 
 type Task struct {
-	Name string
+	Name     string
+	Complete bool
 }
 
 func main() {
@@ -19,7 +20,7 @@ func main() {
 		"1. Add Task",
 		"2. List Tasks",
 		"3. Delete Task",
-		"4. Check Status",
+		"4. Toggle Task Status",
 		"5. Exit",
 	}
 	var tasks []Task
@@ -65,7 +66,7 @@ func main() {
 			fmt.Println("Your Tasks")
 			for i, value := range tasks {
 				// fmt.Printf("%T\n",tasks[i])
-				fmt.Printf("%d.%s\n", i+1, value.Name)
+				fmt.Printf("%d.%s [%v]\n", i+1, value.Name,value.Complete)
 			}
 		case 3:
 			if len(tasks) == 0 {
@@ -107,7 +108,31 @@ func main() {
 			tasks = append(left, right...)
 			fmt.Println("Task deleted successfully..")
 		case 4:
-			fmt.Println("Checking Status...")
+			// fmt.Println("Checking Status...")
+			if len(tasks)==0{
+				fmt.Println("Task list is empty")
+				continue
+			}
+			fmt.println("Task list")
+			for i,value:=range tasks{
+				fmt.Printf("%d.%s[%v]",i+1,value.Name,value.Complete)
+			}
+			input,err:=reader.ReadString('\n')
+			if err!=nil{
+				fmt.Println(err)
+				continue
+			}
+			input=strings.TrimSpace(input)
+			taskNumber,err:=strconv.Atoi(input)
+			if err!=nil{
+				fmt.Println(err)
+				continue
+			}
+			if taskNumber<1 || taskNumber> len(tasks){
+				fmt.Println("Invalid task number.")
+			}
+			index:=taskNumber-1
+			fmt.Println(index)
 		case 5:
 			fmt.Println("Goodbye!")
 			return
