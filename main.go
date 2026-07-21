@@ -9,8 +9,8 @@ import (
 )
 
 type Task struct {
-	Name     string
-	Complete bool
+	Name      string
+	Completed bool
 }
 
 func main() {
@@ -53,7 +53,7 @@ func main() {
 			}
 
 			input = strings.TrimSpace(input)
-			newTask := Task{Name: input}
+			newTask := Task{Name: input, Completed: false}
 			tasks = append(tasks, newTask)
 			fmt.Println("Task added Successfully...")
 			// fmt.Println(tasks)
@@ -64,9 +64,15 @@ func main() {
 				continue
 			}
 			fmt.Println("Your Tasks")
+			completeLabel := "✔"
+			pendingLabel := " "
 			for i, value := range tasks {
 				// fmt.Printf("%T\n",tasks[i])
-				fmt.Printf("%d.%s [%v]\n", i+1, value.Name,value.Complete)
+				if value.Completed {
+					fmt.Printf("%d. [%s] %s\n", i+1, completeLabel, value.Name)
+				} else {
+					fmt.Printf("%d. [%s] %s\n", i+1, pendingLabel, value.Name)
+				}
 			}
 		case 3:
 			if len(tasks) == 0 {
@@ -74,7 +80,7 @@ func main() {
 				continue
 			}
 			for i, value := range tasks {
-				fmt.Printf("%d.%s\n", i+1, value.Name)
+				fmt.Printf("%d. %s\n", i+1, value.Name)
 			}
 			fmt.Println("enter the task no. u want to delete")
 			input, err := reader.ReadString('\n')
@@ -109,30 +115,49 @@ func main() {
 			fmt.Println("Task deleted successfully..")
 		case 4:
 			// fmt.Println("Checking Status...")
-			if len(tasks)==0{
+			if len(tasks) == 0 {
 				fmt.Println("Task list is empty")
 				continue
 			}
-			fmt.println("Task list")
-			for i,value:=range tasks{
-				fmt.Printf("%d.%s[%v]",i+1,value.Name,value.Complete)
+			fmt.Println("Task list")
+			completeLabel := "✔"
+			pendingLabel := " "
+			for i, value := range tasks {
+				// fmt.Printf("%d.%s[%v]\n", i+1, value.Name, value.Complete)
+				if value.Completed {
+					fmt.Printf("%d. [%s] %s\n", i+1, completeLabe;, value.Name)
+				} else {
+					fmt.Printf("%d. [%s] %s\n", i+1, pendingLabel, value.Name)
+				}
 			}
-			input,err:=reader.ReadString('\n')
-			if err!=nil{
+			fmt.Print("enter task no.")
+			input, err := reader.ReadString('\n')
+			if err != nil {
 				fmt.Println(err)
 				continue
 			}
-			input=strings.TrimSpace(input)
-			taskNumber,err:=strconv.Atoi(input)
-			if err!=nil{
+			input = strings.TrimSpace(input)
+			taskNumber, err := strconv.Atoi(input)
+			if err != nil {
 				fmt.Println(err)
 				continue
 			}
-			if taskNumber<1 || taskNumber> len(tasks){
+			if taskNumber < 1 || taskNumber > len(tasks) {
 				fmt.Println("Invalid task number.")
+				continue
 			}
-			index:=taskNumber-1
-			fmt.Println(index)
+			index := taskNumber - 1
+			tasks[index].Completed = !tasks[index].Completed
+			fmt.Println("Task status updated.")
+			//fmt.Println(index)
+			// if !tasks[index].Completed {
+			// 	tasks[index].Completed = true
+			// 	fmt.Println("Task marked")
+			// } else {
+			// 	tasks[index].Completed = false
+			// 	fmt.Println("Task marked as pending")
+			// }
+
 		case 5:
 			fmt.Println("Goodbye!")
 			return
