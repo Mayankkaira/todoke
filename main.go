@@ -6,7 +6,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-
 )
 
 type Task struct {
@@ -53,8 +52,8 @@ func main() {
 			}
 
 			input = strings.TrimSpace(input)
-			a := Task{Name: input}
-			tasks = append(tasks, a)
+			newTask := Task{Name: input}
+			tasks = append(tasks, newTask)
 			fmt.Println("Task added Successfully...")
 			// fmt.Println(tasks)
 
@@ -69,22 +68,44 @@ func main() {
 				fmt.Printf("%d.%s\n", i+1, value.Name)
 			}
 		case 3:
-			if len(tasks)==0{
+			if len(tasks) == 0 {
 				fmt.Println("There is no task to delete")
 				continue
 			}
-			for i,value:=range tasks{
-				fmt.Printf("%d.%s\n",i+1,value.Name)
+			for i, value := range tasks {
+				fmt.Printf("%d.%s\n", i+1, value.Name)
 			}
-			fmt.Println("enter the task no u want to delete")
-			input,err:=reader.ReadString('\n')
-			if err!=nil{
+			fmt.Println("enter the task no. u want to delete")
+			input, err := reader.ReadString('\n')
+			if err != nil {
 				fmt.Println(err)
 				continue
 			}
-			input=strings.TrimSpace(input)
-			tasks=remove()
-
+			input = strings.TrimSpace(input)
+			taskNumber, err := strconv.Atoi(input)
+			if err != nil {
+				fmt.Println(err)
+				continue
+			}
+			// if 1 <= taskNumber && taskNumber <= len(tasks) {
+			// 	index := taskNumber - 1
+			// 	left := tasks[:index]
+			// 	right := tasks[index+1:]
+			// 	tasks = append(left, right...)
+			// 	// fmt.Println(tasks)
+			// 	fmt.Println("Task deleted successfully")
+			// } else {
+			// 	fmt.Println("Invalid task number.")
+			// }
+			if taskNumber < 1 || taskNumber > len(tasks) {
+				fmt.Println("Invalid task number.")
+				continue
+			}
+			index := taskNumber - 1
+			left := tasks[:index]
+			right := tasks[index+1:]
+			tasks = append(left, right...)
+			fmt.Println("Task deleted successfully..")
 		case 4:
 			fmt.Println("Checking Status...")
 		case 5:
