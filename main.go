@@ -13,6 +13,27 @@ type Task struct {
 	Completed bool
 }
 
+func SaveTasks(tasks []Task) error {
+	var content strings.Builder
+	file, err := os.Create("tasks.txt")
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	for _, value := range tasks {
+		content.WriteString(value.Name)
+		content.WriteString(",")
+		content.WriteString(strconv.FormatBool(value.Completed))
+		content.WriteString("\n")
+	}
+	count, err := file.WriteString(content.String())
+	if err != nil {
+		return err
+	}
+	_=count
+	// fmt.Println(Count)
+	return  nil
+}
 func main() {
 	fmt.Println("Welcome to Task Manager")
 	fmt.Println("What is on your mind today")
@@ -112,7 +133,7 @@ func main() {
 			left := tasks[:index]
 			right := tasks[index+1:]
 			tasks = append(left, right...)
-			fmt.Println("Task deleted successfully..")
+			fmt.Println("Task deleted successfully...")
 		case 4:
 			// fmt.Println("Checking Status...")
 			if len(tasks) == 0 {
@@ -125,7 +146,7 @@ func main() {
 			for i, value := range tasks {
 				// fmt.Printf("%d.%s[%v]\n", i+1, value.Name, value.Complete)
 				if value.Completed {
-					fmt.Printf("%d. [%s] %s\n", i+1, completeLabe;, value.Name)
+					fmt.Printf("%d. [%s] %s\n", i+1, completeLabel, value.Name)
 				} else {
 					fmt.Printf("%d. [%s] %s\n", i+1, pendingLabel, value.Name)
 				}
@@ -148,7 +169,7 @@ func main() {
 			}
 			index := taskNumber - 1
 			tasks[index].Completed = !tasks[index].Completed
-			fmt.Println("Task status updated.")
+			fmt.Println("Task status updated...")
 			//fmt.Println(index)
 			// if !tasks[index].Completed {
 			// 	tasks[index].Completed = true
@@ -159,6 +180,10 @@ func main() {
 			// }
 
 		case 5:
+			err := SaveTasks(tasks)
+			if err != nil {
+				fmt.Println(err)
+			}
 			fmt.Println("Goodbye!")
 			return
 		default:
