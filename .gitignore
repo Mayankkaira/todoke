@@ -1,1 +1,3 @@
- 
+# Ignore generated output file
+tasks.txt
+config.local.json   
