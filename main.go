@@ -30,9 +30,9 @@ func SaveTasks(tasks []Task) error {
 	if err != nil {
 		return err
 	}
-	_=count
+	_ = count
 	// fmt.Println(Count)
-	return  nil
+	return nil
 }
 func main() {
 	fmt.Println("Welcome to Task Manager")
