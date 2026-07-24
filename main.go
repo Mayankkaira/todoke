@@ -34,16 +34,17 @@ func SaveTasks(tasks []Task) error {
 	// fmt.Println(Count)
 	return nil
 }
-func LoadTasks()([]Task,error){
-	 _,err:=os.Stat("task.txt")
-	//  osErr:=os.IsNotExist(err)
-	if os.IsNotExist(err){
-		var tasks[]Task
-		return tasks,err
+func LoadTasks() ([]Task, error) {
+	var tasks[]Task
+	file,err:=os.Open("tasks.txt")
+	if os.IsNotExist(err) {
+		return tasks, nil
 	}
-	
-
-
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+    return tasks,nil
 }
 func main() {
 	fmt.Println("Welcome to Task Manager")
