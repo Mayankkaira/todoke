@@ -34,6 +34,17 @@ func SaveTasks(tasks []Task) error {
 	// fmt.Println(Count)
 	return nil
 }
+func LoadTasks()([]Task,error){
+	 _,err:=os.Stat("task.txt")
+	//  osErr:=os.IsNotExist(err)
+	if os.IsNotExist(err){
+		var tasks[]Task
+		return tasks,err
+	}
+	
+
+
+}
 func main() {
 	fmt.Println("Welcome to Task Manager")
 	fmt.Println("What is on your mind today")
