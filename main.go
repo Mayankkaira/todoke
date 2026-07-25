@@ -6,6 +6,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"io"
 )
 
 type Task struct {
@@ -35,16 +36,27 @@ func SaveTasks(tasks []Task) error {
 	return nil
 }
 func LoadTasks() ([]Task, error) {
-	var tasks[]Task
-	file,err:=os.Open("tasks.txt")
-	if os.IsNotExist(err) {
-		return tasks, nil
-	}
+	// var tasks[]Task
+	file, err := os.Open("tasks.txt")
 	if err != nil {
+		if os.IsNotExist(err) {
+			return []Task{}, nil
+		}
 		return nil, err
 	}
 	defer file.Close()
-    return tasks,nil
+	reader := bufio.NewReader(file)
+	for {
+		_, err := reader.ReadString('\n')
+        if err!=nil{
+			if err==io.EOF{
+			return []Task{},nil	
+		}
+			return nil,err
+		}
+		
+
+	}
 }
 func main() {
 	fmt.Println("Welcome to Task Manager")
