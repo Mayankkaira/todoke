@@ -3,10 +3,10 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"os"
 	"strconv"
 	"strings"
-	"io"
 )
 
 type Task struct {
@@ -27,16 +27,13 @@ func SaveTasks(tasks []Task) error {
 		content.WriteString(strconv.FormatBool(value.Completed))
 		content.WriteString("\n")
 	}
-	count, err := file.WriteString(content.String())
+	_, err = file.WriteString(content.String())
 	if err != nil {
 		return err
 	}
-	_ = count
-	// fmt.Println(Count)
 	return nil
 }
 func LoadTasks() ([]Task, error) {
-	// var tasks[]Task
 	file, err := os.Open("tasks.txt")
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -45,20 +42,35 @@ func LoadTasks() ([]Task, error) {
 		return nil, err
 	}
 	defer file.Close()
+	tasks := []Task{}
 	reader := bufio.NewReader(file)
 	for {
-		_, err := reader.ReadString('\n')
-        if err!=nil{
-			if err==io.EOF{
-			return []Task{},nil	
-		}
-			return nil,err
+		data, err := reader.ReadString('\n')
+		if data != "" {
+			data = strings.TrimSpace(data)
+			parts := strings.Split(data, ",")
+			if len(parts) != 2 {
+				return nil, fmt.Errorf("invalid task format")
+			}
+			part, err := strconv.ParseBool(parts[1])
+			if err != nil {
+				return nil, err
+			}
+			task := Task{Name: parts[0], Completed: part}
+			tasks = append(tasks, task)
 		}
 		
+		if err == io.EOF {
+			return tasks, nil
+		}
+		if err != nil {
+			return nil, err
+		}
 
 	}
 }
-func main() {
+
+func main() {	
 	fmt.Println("Welcome to Task Manager")
 	fmt.Println("What is on your mind today")
 	menuOptions := []string{
@@ -68,7 +80,11 @@ func main() {
 		"4. Toggle Task Status",
 		"5. Exit",
 	}
-	var tasks []Task
+	// var tasks []Task
+	tasks,err:=LoadTasks()
+	if err!=nil{
+		fmt.Println(err)
+	}
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		for _, task := range menuOptions {
@@ -101,8 +117,7 @@ func main() {
 			newTask := Task{Name: input, Completed: false}
 			tasks = append(tasks, newTask)
 			fmt.Println("Task added Successfully...")
-			// fmt.Println(tasks)
-
+			err = SaveTasks(tasks)
 		case 2:
 			if len(tasks) == 0 {
 				fmt.Println("No task found")
@@ -202,7 +217,6 @@ func main() {
 			// 	tasks[index].Completed = false
 			// 	fmt.Println("Task marked as pending")
 			// }
-
 		case 5:
 			err := SaveTasks(tasks)
 			if err != nil {
