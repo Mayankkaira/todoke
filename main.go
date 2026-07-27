@@ -59,7 +59,7 @@ func LoadTasks() ([]Task, error) {
 			task := Task{Name: parts[0], Completed: part}
 			tasks = append(tasks, task)
 		}
-		
+
 		if err == io.EOF {
 			return tasks, nil
 		}
@@ -70,7 +70,13 @@ func LoadTasks() ([]Task, error) {
 	}
 }
 
-func main() {	
+func main() {
+	tasks, err := LoadTasks()
+	if err != nil {
+		fmt.Println("Failded to laod tasks:", err)
+		fmt.Println("Exiting...")
+		return
+	}
 	fmt.Println("Welcome to Task Manager")
 	fmt.Println("What is on your mind today")
 	menuOptions := []string{
@@ -81,10 +87,6 @@ func main() {
 		"5. Exit",
 	}
 	// var tasks []Task
-	tasks,err:=LoadTasks()
-	if err!=nil{
-		fmt.Println(err)
-	}
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		for _, task := range menuOptions {
@@ -117,7 +119,6 @@ func main() {
 			newTask := Task{Name: input, Completed: false}
 			tasks = append(tasks, newTask)
 			fmt.Println("Task added Successfully...")
-			err = SaveTasks(tasks)
 		case 2:
 			if len(tasks) == 0 {
 				fmt.Println("No task found")
