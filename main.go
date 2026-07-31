@@ -110,7 +110,14 @@ func main() {
 
 		switch choice {
 		case 1:
-			tasks=task.AddTasks(tasks, reader)
+			fmt.Println("enter the task name u want to enter")
+			input, err := reader.ReadString('\n')
+			if err != nil {
+				fmt.Println(err)
+				continue
+			}
+			input = strings.TrimSpace(input)
+			tasks = task.AddTasks(tasks,input)
 			err = storage.SaveTasks(tasks)
 			if err != nil {
 				fmt.Println("Failed to save tasks:", err, "\nYour changes are still available in this session.Fix the issue and try again before exiting.")
@@ -118,52 +125,44 @@ func main() {
 				fmt.Println("Task added successfully.")
 			}
 		case 2:
+			// if len(tasks) == 0 {
+			// 	fmt.Println("No task found")
+			// 	continue
+			// }
+			// fmt.Println("Your Tasks")
+			// completeLabel := "✔"
+			// pendingLabel := " "
+			// for i, value := range tasks {
+			// 	// fmt.Printf("%T\n",tasks[i])
+			// 	if value.Completed {
+			// 		fmt.Printf("%d. [%s] %s\n", i+1, completeLabel, value.Name)
+			// 	} else {
+			// 		fmt.Printf("%d. [%s] %s\n", i+1, pendingLabel, value.Name)
+			// 	}
+			// }
 			if len(tasks) == 0 {
-				fmt.Println("No task found")
+				fmt.Println("No task found.")
 				continue
 			}
-			fmt.Println("Your Tasks")
-			completeLabel := "✔"
-			pendingLabel := " "
-			for i, value := range tasks {
-				// fmt.Printf("%T\n",tasks[i])
-				if value.Completed {
-					fmt.Printf("%d. [%s] %s\n", i+1, completeLabel, value.Name)
-				} else {
-					fmt.Printf("%d. [%s] %s\n", i+1, pendingLabel, value.Name)
-				}
-			}
+			printTasks(tasks)
 		case 3:
-			tasks,err=task.DeleteTask(tasks,reader)
-			if err!=nil{
+			if len(tasks) == 0 {
+				fmt.Println("There is no task to delete")
+				continue
+			}
+			printTasks(tasks)
+			fmt.Println("enter the task no. u want to delete")
+			input, err := reader.ReadString('\n')
+			if err != nil {
 				fmt.Println(err)
 				continue
 			}
-			err=storage.SaveTasks(tasks)
+			input = strings.TrimSpace(input)
+			taskNumber, err := strconv.Atoi(input)
 			if err != nil {
-				fmt.Println("Failed to delete tasks:", err, "\nYour changes are still available in this session.Fix the issue and try again before exiting.")
-			} else{
-				fmt.Println("Task deleted Successfully.")
+				fmt.Println(err)
+				continue
 			}
-			// if len(tasks) == 0 {
-			// 	fmt.Println("There is no task to delete")
-			// 	continue
-			// }
-			// for i, value := range tasks {
-			// 	fmt.Printf("%d. %s\n", i+1, value.Name)
-			// }
-			// fmt.Println("enter the task no. u want to delete")
-			// input, err := reader.ReadString('\n')
-			// if err != nil {
-			// 	fmt.Println(err)
-			// 	continue
-			// }
-			// input = strings.TrimSpace(input)
-			// taskNumber, err := strconv.Atoi(input)
-			// if err != nil {
-			// 	fmt.Println(err)
-			// 	continue
-			// }
 			// // if 1 <= taskNumber && taskNumber <= len(tasks) {
 			// // 	index := taskNumber - 1
 			// // 	left := tasks[:index]
@@ -174,38 +173,27 @@ func main() {
 			// // } else {
 			// // 	fmt.Println("Invalid task number.")
 			// // }
-			// if taskNumber < 1 || taskNumber > len(tasks) {
-			// 	fmt.Println("Invalid task number.")
-			// 	continue
-			// }
-			// index := taskNumber - 1
-			// left := tasks[:index]
-			// right := tasks[index+1:]
-			// tasks = append(left, right...)
-			// err = storage.SaveTasks(tasks)
-			// if err != nil {
-			// 	fmt.Println("Failed to delete tasks:", err, "\nYour changes are still available in this session.Fix the issue and try again before exiting.")
-			// } else {
-			// 	fmt.Println("Task deleted Successfully.")
-			// }
+			if taskNumber < 1 || taskNumber > len(tasks) {
+				fmt.Println("Invalid task number.")
+				continue
+			}
+			index := taskNumber - 1
+			tasks = task.DeleteTask(tasks, index)
+			err = storage.SaveTasks(tasks)
+			if err != nil {
+				fmt.Println("Failed to delete tasks:", err, "\nYour changes are still available in this session.Fix the issue and try again before exiting.")
+			} else {
+				fmt.Println("Task deleted Successfully.")
+			}
 		case 4:
 			// fmt.Println("Checking Status...")
 			if len(tasks) == 0 {
 				fmt.Println("Task list is empty")
 				continue
 			}
-			fmt.Println("Task list")
-			completeLabel := "✔"
-			pendingLabel := " "
-			for i, value := range tasks {
-				// fmt.Printf("%d.%s[%v]\n", i+1, value.Name, value.Complete)
-				if value.Completed {
-					fmt.Printf("%d. [%s] %s\n", i+1, completeLabel, value.Name)
-				} else {
-					fmt.Printf("%d. [%s] %s\n", i+1, pendingLabel, value.Name)
-				}
-			}
-			fmt.Print("enter task no.")
+			// fmt.Println("Task list")
+			printTasks(tasks)
+			fmt.Print("enter task no. to mark complete/incomplete:")
 			input, err := reader.ReadString('\n')
 			if err != nil {
 				fmt.Println(err)
@@ -222,7 +210,8 @@ func main() {
 				continue
 			}
 			index := taskNumber - 1
-			tasks[index].Completed = !tasks[index].Completed
+			// tasks[index].Completed = !tasks[index].Completed
+			task.ToggleTask(tasks, index)
 			err = storage.SaveTasks(tasks)
 			if err != nil {
 				fmt.Println("Failed to save tasks:", err, "\nYour changes are still available in this session.Fix the issue and try again before exiting.")
@@ -240,7 +229,7 @@ func main() {
 		case 5:
 			err := storage.SaveTasks(tasks)
 			if err != nil {
-				fmt.Println("Failded to save tasks:", err, "\nYour latest changes could not be saved and will be lost after exiting.")
+				fmt.Println("Failed to save tasks:", err, "\nYour latest changes could not be saved and will be lost after exiting.")
 			}
 			fmt.Println("Goodbye!")
 			return
