@@ -1,3 +1,3 @@
-module github.com/mayankkaira/taskmanager
+module github.com/Mayankkaira/todoke
 
 go 1.26.1

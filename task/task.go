@@ -1,27 +1,28 @@
 package task
 
-import "fmt"
+import (
+	"errors"
+	"strings"
+)
 
 type Task struct {
 	Name      string
 	Completed bool
 }
 
-func AddTask(tasks []Task, name string) []Task {
+func AddTask(tasks []Task, name string) ([]Task, error) {
+	name = strings.TrimSpace(name)
+	if name == "" {
+		return tasks, errors.New("task name cannot be empty")
+	}
 	newTask := Task{Name: name, Completed: false}
 	tasks = append(tasks, newTask)
-	// err = storage.SaveTasks(tasks)
-	// if err != nil {
-	// 	fmt.Errorf("Failed to save tasks:", err, "\nYour changes are still available in this session.Fix the issue and try again before exiting.")
-	// 	// fmt.Println("Your changes are still available in this session.Fix the issue and try again before exiting.")
-	// }
-	//return nil
-	return tasks
+	return tasks, nil
 }
 
 func DeleteTask(tasks []Task, index int) ([]Task, error) {
 	if index < 0 || index >= len(tasks) {
-		return tasks, fmt.Errorf("Invalid task number")
+		return tasks, errors.New("task index out of range")
 	}
 	left := tasks[:index]
 	right := tasks[index+1:]
@@ -29,13 +30,10 @@ func DeleteTask(tasks []Task, index int) ([]Task, error) {
 	return tasks, nil
 }
 
-// err = storage.SaveTasks(tasks)
-// if err != nil {
-// 	fmt.Println("Failed to delete tasks:", err, "\nYour changes are still available in this session.Fix the issue and try again before exiting.")
-// } else {
-// 	fmt.Println("Task deleted Successfully.")
-// }
-
-func ToggleTask(tasks []Task, index int) {
+func ToggleTask(tasks []Task, index int) error {
+	if index < 0 || index >= len(tasks) {
+		return errors.New("task index out of range")
+	}
 	tasks[index].Completed = !tasks[index].Completed
+	return nil
 }

@@ -3,15 +3,16 @@ package main
 import (
 	"fmt"
 
-	"github.com/mayankkaira/taskmanager/task"
+	"github.com/Mayankkaira/todoke/task"
 )
 
 func printTasks(tasks []task.Task) {
 	fmt.Println("Your Tasks")
-	completeLabel := "✔"
-	pendingLabel := " "
+	const (
+		completeLabel = "✔"
+		pendingLabel  = " "
+	)
 	for i, value := range tasks {
-		// fmt.Printf("%T\n",tasks[i])
 		if value.Completed {
 			fmt.Printf("%d. [%s] %s\n", i+1, completeLabel, value.Name)
 		} else {

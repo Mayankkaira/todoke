@@ -7,70 +7,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/mayankkaira/taskmanager/storage"
-	"github.com/mayankkaira/taskmanager/task"
+	"github.com/Mayankkaira/todoke/storage"
+	"github.com/Mayankkaira/todoke/task"
 )
-
-// type Task struct {
-// 	Name      string
-// 	Completed bool
-// }
-
-// func SaveTasks(tasks []Task) error {
-// 	var content strings.Builder
-// 	file, err := os.Create("tasks.txt")
-// 	if err != nil {
-// 		return err
-// 	}
-// 	defer file.Close()
-// 	for _, value := range tasks {
-// 		content.WriteString(value.Name)
-// 		content.WriteString("|")
-// 		content.WriteString(strconv.FormatBool(value.Completed))
-// 		content.WriteString("\n")
-// 	}
-// 	_, err = file.WriteString(content.String())
-// 	if err != nil {
-// 		return err
-// 	}
-// 	return nil
-// }
-// func LoadTasks() ([]Task, error) {
-// 	file, err := os.Open("tasks.txt")
-// 	if err != nil {
-// 		if os.IsNotExist(err) {
-// 			return []Task{}, nil
-// 		}
-// 		return nil, err
-// 	}
-// 	defer file.Close()
-// 	tasks := []Task{}
-// 	reader := bufio.NewReader(file)
-// 	for {
-// 		data, err := reader.ReadString('\n')
-// 		if data != "" {
-// 			data = strings.TrimSpace(data)
-// 			parts := strings.Split(data, "|")
-// 			if len(parts) != 2 {
-// 				return nil, fmt.Errorf("invalid task format")
-// 			}
-// 			part, err := strconv.ParseBool(parts[1])
-// 			if err != nil {
-// 				return nil, err
-// 			}
-// 			task := Task{Name: parts[0], Completed: part}
-// 			tasks = append(tasks, task)
-// 		}
-
-// 		if err == io.EOF {
-// 			return tasks, nil
-// 		}
-// 		if err != nil {
-// 			return nil, err
-// 		}
-
-// 	}
-// }
 
 func main() {
 	tasks, err := storage.LoadTasks()
@@ -88,7 +27,7 @@ func main() {
 		"4. Toggle Task Status",
 		"5. Exit",
 	}
-	// var tasks []Task
+	
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		for _, task := range menuOptions {
@@ -101,7 +40,6 @@ func main() {
 			continue
 		}
 		input = strings.TrimSpace(input)
-		// fmt.Printf("%q\n", input)
 		choice, err := strconv.Atoi(input)
 		if err != nil {
 			fmt.Println(err)
@@ -110,14 +48,18 @@ func main() {
 
 		switch choice {
 		case 1:
-			fmt.Println("enter the task name u want to enter")
+			fmt.Println("enter the task name:")
 			input, err := reader.ReadString('\n')
 			if err != nil {
 				fmt.Println(err)
 				continue
 			}
 			input = strings.TrimSpace(input)
-			tasks = task.AddTasks(tasks,input)
+			tasks, err = task.AddTask(tasks, input)
+			if err != nil {
+				fmt.Println("Failed to add task:", err)
+				continue
+			}
 			err = storage.SaveTasks(tasks)
 			if err != nil {
 				fmt.Println("Failed to save tasks:", err, "\nYour changes are still available in this session.Fix the issue and try again before exiting.")
@@ -125,21 +67,6 @@ func main() {
 				fmt.Println("Task added successfully.")
 			}
 		case 2:
-			// if len(tasks) == 0 {
-			// 	fmt.Println("No task found")
-			// 	continue
-			// }
-			// fmt.Println("Your Tasks")
-			// completeLabel := "✔"
-			// pendingLabel := " "
-			// for i, value := range tasks {
-			// 	// fmt.Printf("%T\n",tasks[i])
-			// 	if value.Completed {
-			// 		fmt.Printf("%d. [%s] %s\n", i+1, completeLabel, value.Name)
-			// 	} else {
-			// 		fmt.Printf("%d. [%s] %s\n", i+1, pendingLabel, value.Name)
-			// 	}
-			// }
 			if len(tasks) == 0 {
 				fmt.Println("No task found.")
 				continue
@@ -147,11 +74,11 @@ func main() {
 			printTasks(tasks)
 		case 3:
 			if len(tasks) == 0 {
-				fmt.Println("There is no task to delete")
+				fmt.Println("There is no task to delete.")
 				continue
 			}
 			printTasks(tasks)
-			fmt.Println("enter the task no. u want to delete")
+			fmt.Println("enter the task no. u want to delete.")
 			input, err := reader.ReadString('\n')
 			if err != nil {
 				fmt.Println(err)
@@ -163,35 +90,27 @@ func main() {
 				fmt.Println(err)
 				continue
 			}
-			// // if 1 <= taskNumber && taskNumber <= len(tasks) {
-			// // 	index := taskNumber - 1
-			// // 	left := tasks[:index]
-			// // 	right := tasks[index+1:]
-			// // 	tasks = append(left, right...)
-			// // 	// fmt.Println(tasks)
-			// // 	fmt.Println("Task deleted successfully")
-			// // } else {
-			// // 	fmt.Println("Invalid task number.")
-			// // }
 			if taskNumber < 1 || taskNumber > len(tasks) {
 				fmt.Println("Invalid task number.")
 				continue
 			}
 			index := taskNumber - 1
-			tasks = task.DeleteTask(tasks, index)
+			tasks, err = task.DeleteTask(tasks, index)
+			if err != nil {
+				fmt.Println("Failed to delete task:", err)
+				continue
+			}
 			err = storage.SaveTasks(tasks)
 			if err != nil {
 				fmt.Println("Failed to delete tasks:", err, "\nYour changes are still available in this session.Fix the issue and try again before exiting.")
 			} else {
-				fmt.Println("Task deleted Successfully.")
+				fmt.Println("Task deleted successfully.")
 			}
 		case 4:
-			// fmt.Println("Checking Status...")
 			if len(tasks) == 0 {
 				fmt.Println("Task list is empty")
 				continue
 			}
-			// fmt.Println("Task list")
 			printTasks(tasks)
 			fmt.Print("enter task no. to mark complete/incomplete:")
 			input, err := reader.ReadString('\n')
@@ -210,22 +129,17 @@ func main() {
 				continue
 			}
 			index := taskNumber - 1
-			// tasks[index].Completed = !tasks[index].Completed
-			task.ToggleTask(tasks, index)
+			err = task.ToggleTask(tasks, index)
+			if err != nil {
+				fmt.Println("Failed to toggle task:", err)
+				continue
+			}
 			err = storage.SaveTasks(tasks)
 			if err != nil {
 				fmt.Println("Failed to save tasks:", err, "\nYour changes are still available in this session.Fix the issue and try again before exiting.")
 			} else {
 				fmt.Println("Task status updated.")
 			}
-			//fmt.Println(index)
-			// if !tasks[index].Completed {
-			// 	tasks[index].Completed = true
-			// 	fmt.Println("Task marked")
-			// } else {
-			// 	tasks[index].Completed = false
-			// 	fmt.Println("Task marked as pending")
-			// }
 		case 5:
 			err := storage.SaveTasks(tasks)
 			if err != nil {
@@ -234,7 +148,7 @@ func main() {
 			fmt.Println("Goodbye!")
 			return
 		default:
-			fmt.Println("Invalid Option")
+			fmt.Println("Invalid Option.")
 		}
 
 	}
